@@ -2,7 +2,10 @@
  A cryptocurrency system that utilizes blockchain technology.
 
 **To Do**
-- Create Block Class
-- 
-- 
+- Pending Transactions
+- Digital Signature
+- Block rewards
+- DIDs
+- Addresses
+- Transactions
 
