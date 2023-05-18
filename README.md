@@ -9,7 +9,6 @@
 - Addresses
 - Transactions
 
-Sure. Here is an elaboration on each of the security techniques that I mentioned earlier:
 
 * **Use of cryptography:** Cryptography is the use of mathematical techniques to secure information and communications. It is one of the most important security techniques used in blockchain. Cryptography can be used to protect a variety of things in blockchain, including:
     * **Transactions:** Cryptography can be used to secure transactions by ensuring that they are only made by authorized parties and that they cannot be tampered with.
