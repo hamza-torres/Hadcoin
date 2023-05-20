@@ -20,5 +20,18 @@ class Transaction:
         self.amount = amount
         self.signature = None
 
-    def __repr__(self):
-        return str(self.__dict__)
+
+
+
+
+
+
+        """
+        Sign transaction with private key
+        """
+        # private_key = RSA.importKey(binascii.unhexlify(self.sender))
+        # signer = PKCS1_v1_5.new(private_key)
+        # h = SHA.new(str(self.to_dict()).encode('utf8'))
+        # self.signature = binascii.hexlify(signer.sign(h)).decode('ascii')
+        # return self.signature
+        

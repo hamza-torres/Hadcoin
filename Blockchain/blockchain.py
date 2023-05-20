@@ -3,18 +3,7 @@ import datetime
 import hashlib
 import json
 import random
-
-class Transaction:
-    def __init__(self, sender, receiver, amount):
-        self.sender = sender
-        self.receiver = receiver
-        self.amount = amount
-        self.timestamp = datetime.datetime.now()
-        self.public_key = None
-    
-    def __str__(self):
-        return f"{self.sender} -> {self.receiver} : {self.amount} @ {self.timestamp}"
-
+import transaction
 
 class Block:
     def __init__(self, index, timestamp, transactions, previous_hash, difficulty, nonce):
@@ -27,33 +16,42 @@ class Block:
         self.hash = self.calculate_hash()
 
     def calculate_hash(self):
-        hash_str = str(self.index) + str(self.timestamp) + str(self.transactions) + str(self.previous_hash) + str(self.difficulty) + str(self.nonce) 
-        return hashlib.sha256(hash_str.encode('utf-8')).hexdigest()
+        hash_str = (
+            str(self.index) + 
+            str(self.timestamp) + 
+            str(self.transactions) + 
+            str(self.previous_hash) + 
+            str(self.nonce) + 
+            str(self.difficulty))  
+        return hashlib.sha256(hash_str.encode()).hexdigest()
 
 
 
 class Blockchain:
     def __init__(self):
-        self.chain = [self.create_genesis_block()]
         self.difficulty = 1
+        self.chain = [self.create_genesis_block()]
         self.pending_transactions = []
 
     def create_genesis_block(self):
-        return Block(index = 0, 
-                     timestamp= datetime.datetime.now(), 
+        return Block(index = 1, 
+                     timestamp= str(datetime.datetime.now()), 
                      transactions= "Genesis block", 
-                     previous_hash= "", 
+                     previous_hash= None,
+                     difficulty= 1,
                      nonce= 1)
     
     def add_block(self, block):
-        block.previous_hash = self.chain[-1].hash
-        block.difficulty = self.difficulty
+        if block.previous_hash != self.get_latest_block().hash:
+            return False
+        if block.difficulty != self.difficulty:
+            return False
         self.chain.append(block)
-        return block
+        return block.__dict__
 
     def get_block(self, index):
-        if index < len(self.chain):
-            return self.chain[index]
+        if index < len(self.chain) + 1 and index > 0:
+            return self.chain[index-1].__dict__
         return None
     
     def get_latest_block(self):
@@ -74,12 +72,16 @@ class Blockchain:
             current_block = self.chain[i]
             previous_block = self.chain[i-1]
             if current_block.hash != current_block.calculate_hash():
+                print(f"Current hash is invalid of block {current_block.index}")
                 return False
             if current_block.previous_hash != previous_block.hash:
+                print(f"Previous hash is invalid of block {current_block.index}")
                 return False
             if current_block.hash[:current_block.difficulty] != "0" * current_block.difficulty:
+                print(f"Block {current_block.index} has a mismatched difficulty")
                 return False
             if current_block.difficulty < previous_block.difficulty:
+                print(f"Block {current_block.index} has a lower difficulty than previous block")
                 return False
         return True
     
@@ -87,29 +89,69 @@ class Blockchain:
         self.pending_transactions.append(transaction)
 
     def mine_block(self):              
-        block = Block(index = len(self.chain), 
-                      timestamp = datetime.datetime.now(), 
-                      previous_hash = self.chain[-1].hash,
-                      transactions= '',  
-                      difficulty = self.difficulty, 
-                      nonce = 0)
-        if self.pending_transactions[0]:
-            block.transactions = self.pending_transactions[0].__str__()
-        block.nonce = self.proof_of_work(block)
-
-        if self.pending_transactions[0]:
+        block = Block(index = len(self.chain) + 1, 
+                      timestamp = str(datetime.datetime.now()),
+                      previous_hash = self.get_latest_block().hash,
+                      transactions= None,  
+                      nonce = 0,
+                      difficulty = self.difficulty) 
+        if self.pending_transactions:
+            # block.transactions = self.pending_transactions[0]
+            block.transactions = self.pending_transactions[0].__dict__
+            block.nonce = self.proof_of_work(block)
+            block.hash = block.calculate_hash()
             self.pending_transactions.pop(0)
+        else:
+            block.nonce = self.proof_of_work(block)
+            block.hash = block.calculate_hash()
 
-        self.add_block(block)
+        return self.add_block(block)
+        
+    
 
-        return block
+    def get_chain(self):
+        if self.chain:
+            ret_chain = []
+            for block in self.chain:
+                ret_chain.append(block.__dict__)
+            return ret_chain
+        return None
+  
+  
 
 
 
+blockchain = Blockchain()
+transaction1 = transaction.Transaction("Jack", "Man", 100)
+transaction2 = transaction.Transaction("John", "Noman", 500)
+transaction3 = transaction.Transaction("Jim", "Yesman", 700)
+transaction4 = transaction.Transaction("Man", "Yesman", 10)
+transaction5 = transaction.Transaction("Man", "Yesman", 20)
+transaction6 = transaction.Transaction("Jim", "Man", 20)
+
+blockchain.add_transaction(transaction1)
+blockchain.add_transaction(transaction2)
+blockchain.add_transaction(transaction3)
+blockchain.add_transaction(transaction4)
+blockchain.add_transaction(transaction5)
+blockchain.add_transaction(transaction6)
 
 
+print(blockchain.mine_block())
+print('\n')
+print(blockchain.mine_block())
+print('\n')
+print(blockchain.mine_block())
+print('\n')
+print(blockchain.mine_block())
+print('\n')
+print(blockchain.mine_block())
+print('\n')
+print(blockchain.get_chain())
+print('\n')
+
+print(blockchain.validate_blockchain())
 
 
-
-
-
+# print('\n')
+# print(blockchain.get_block(2)['transactions']['sender'])
