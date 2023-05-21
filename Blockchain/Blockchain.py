@@ -129,7 +129,7 @@ class Blockchain:
         """
         Mines a new block with the pending transactions and adds it to the chain.
         """
-        block = Block(
+        block = Block.Block(
             index=self.chain[-1].index + 1,
             timestamp= str(datetime.datetime.now()),
             previous_hash=self.chain[-1].hash,

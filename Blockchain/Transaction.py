@@ -44,7 +44,14 @@ class Transaction:
         """
         self.signature = rsa.sign(self.hash.encode(), private_key, 'SHA-256')
 
+    def verify(self, public_key):
+        """
+        Verifies the signature of the transaction with the public key of the sender.
 
+        Args:
+            public_key (str)
+        """
+        return rsa.verify(self.hash.encode(), self.signature, public_key)
 
     def __repr__(self):
         return "Transaction<From: {}, To: {}, Amount: {}, Time: {}, Hash: {}>".format(
