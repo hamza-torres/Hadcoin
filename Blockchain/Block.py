@@ -42,12 +42,12 @@ class Block:
         """
         key = hashlib.sha256()
         key.update(
-            str(self.index).encode('utf-8') +
-            str(self.timestamp).encode('utf-8') +
-            str(self.previous_hash).encode('utf-8') +
-            str(self.transaction).encode('utf-8') +
-            str(self.difficulty).encode('utf-8') +
-            str(self.nonce).encode('utf-8')
+            str(self.index).encode() +
+            str(self.timestamp).encode() +
+            str(self.previous_hash).encode() +
+            str(self.transaction).encode() +
+            str(self.difficulty).encode() +
+            str(self.nonce).encode()
         )
         return key.hexdigest()
     
