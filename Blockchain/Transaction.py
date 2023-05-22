@@ -3,7 +3,7 @@ import hashlib
 import ecdsa
 
 class Transaction:
-    def __init__(self, sender, receiver, amount, timestamp):
+    def __init__(self, sender, receiver, amount, timestamp, signature=None, hash=None):
         """
         Returns a new Transaction object.
 
