@@ -34,29 +34,29 @@ class Block:
         self.transaction = transaction
         self.difficulty = difficulty
         self.nonce = nonce
-        self.hash = self.hash()
+        self.hash = self.hash_block()
 
-    def hash(self):
+    def hash_block(self):
         """
         Returns a hash of the block taking into account its attributes
         """
-        key = hashlib.sha256()
-        key.update(
-            str(self.index).encode() +
-            str(self.timestamp).encode() +
-            str(self.previous_hash).encode() +
-            str(self.transaction).encode() +
-            str(self.difficulty).encode() +
-            str(self.nonce).encode()
-        )
-        return key.hexdigest()
-    
-    def __repr__(self):
-        return "Block<Index: {}, Time: {}, Transaction{}, Prev_Hash: {}, Hash: {}>".format(
-            self.index,
-            self.timestamp,
-            self.transaction,
-            self.previous_hash,
-            self.hash
-        )
-    
+        hash_str = (
+                str(self.index) + 
+                str(self.timestamp) + 
+                str(self.transaction) + 
+                str(self.previous_hash) + 
+                str(self.nonce) + 
+                str(self.difficulty))  
+        return hashlib.sha256(hash_str.encode()).hexdigest()
+
+
+    def __str__(self):
+        return f"""
+        Index: {self.index}
+        Timestamp: {self.timestamp}
+        Transaction: {self.transaction.__str__()}
+        Previous Hash: {self.previous_hash}
+        Difficulty: {self.difficulty}
+        Nonce: {self.nonce}
+        Hash: {self.hash}
+        """

@@ -1,4 +1,4 @@
-import Transaction
+from Transaction import Transaction
 import datetime
 import rsa
 
@@ -25,7 +25,7 @@ class Wallet:
             amount (float)
             timestamp (int)
         """
-        transaction = Transaction.Transaction(
+        transaction = Transaction(
             self.public_key, 
             receiver, 
             amount, 

@@ -1,6 +1,8 @@
-import Block
+from Block import Block
+from Transaction import Transaction
 import random
 import datetime
+import math
 
 class Blockchain:
     def __init__(self):
@@ -8,9 +10,9 @@ class Blockchain:
         Returns a new Blockchain object with a chain containing the genesis block and 
         sets the difficulty to 1.
         """
-        self.chain = [Block.Block(
+        self.chain = [Block(
             index=1,
-            timestamp=0,
+            timestamp=str(datetime.datetime.now()),
             previous_hash=None,
             transaction={"Genesis Block": 0},
             difficulty=1,
@@ -30,6 +32,7 @@ class Blockchain:
             block.previous_hash == self.chain[-1].hash and \
             block.hash.startswith('0' * self.difficulty):
             self.chain.append(block)
+            self.set_difficulty()
             return 'Block Successfully Added', block
         return False
 
@@ -40,7 +43,7 @@ class Blockchain:
             Args:
                 transaction (Transaction)
             """
-            if transaction.is_valid() and \
+            if transaction.verify(transaction.sender) and \
                 transaction not in self.pending_transactions:
                 self.pending_transactions.append(transaction)
                 return 'Transaction Successfully Added', transaction
@@ -54,7 +57,10 @@ class Blockchain:
         Args:
             difficulty (int)
         """
-        self.difficulty = int(self.chain[-1].index/2016)
+        self.difficulty = math.ceil(self.chain[-1].index/2016)
+        if self.difficulty < 1:
+            self.difficulty = 1
+        # return 'Difficulty Successfully Set', self.difficulty
 
 
     def replace_chain(self, new_chain):
@@ -119,7 +125,7 @@ class Blockchain:
         while not valid_proof:
             nonce = random.randint(0, 2**32)
             block.nonce = nonce
-            hash = block.hash()
+            hash = block.hash_block()
             if hash[:self.difficulty] == "0" * self.difficulty:
                 valid_proof = True
         return nonce
@@ -129,7 +135,7 @@ class Blockchain:
         """
         Mines a new block with the pending transactions and adds it to the chain.
         """
-        block = Block.Block(
+        block = Block(
             index=self.chain[-1].index + 1,
             timestamp= str(datetime.datetime.now()),
             previous_hash=self.chain[-1].hash,
@@ -140,11 +146,11 @@ class Blockchain:
         if self.pending_transactions:
             block.transaction = self.pending_transactions[0]
             block.nonce = self.proof_of_work(block)
-            block.hash = block.hash()
+            block.hash = block.hash_block()
             self.pending_transactions.pop(0)
         else:
             block.nonce = self.proof_of_work(block)
-            block.hash = block.hash()
+            block.hash = block.hash_block()
         return self.add_block(block)
 
 
@@ -157,13 +163,19 @@ class Blockchain:
                 continue
             if not self.validate_block(block):
                 return False
+            if block.transaction:
+                if not self.validate_transaction(block.transaction):
+                    return False
+        for transaction in self.pending_transactions:
+            if not self.validate_transaction(transaction):
+                return False
         return True
     
     def validate_block(self, block):
         """
         Returns True if the block is valid, False otherwise.
         """
-        if block.hash != block.hash():
+        if block.hash != block.hash_block():
             return False
         if block.previous_hash != self.get_block(block.index - 1).hash:
             return False
@@ -173,19 +185,14 @@ class Blockchain:
             return False
         return True
     
-
-
-
-
-
-
-
-
-
-
-
-
-
+    def validate_transaction(self, transaction):
+        """
+        Returns True if the transaction is valid, False otherwise.
+        """
+        if transaction.verify(transaction.sender):
+            return True
+        return False
+    
 
     def __repr__(self):
         return "Blockchain<difficulty: {}, chain: {}>".format(
@@ -193,3 +200,5 @@ class Blockchain:
             self.chain
         )   
         
+
+

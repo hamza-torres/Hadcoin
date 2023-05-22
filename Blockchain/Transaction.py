@@ -1,9 +1,9 @@
 import datetime
 import hashlib
-import rsa
+import ecdsa
 
 class Transaction:
-    def __init__(self, sender, receiver, amount, timestamp, hash, signature):
+    def __init__(self, sender, receiver, amount, timestamp):
         """
         Returns a new Transaction object.
 
@@ -20,7 +20,7 @@ class Transaction:
         self.amount = amount
         self.timestamp = timestamp
         self.hash = self.hash()
-        self.signature = signature
+        self.signature = None
 
     def hash(self):
         """
@@ -33,7 +33,7 @@ class Transaction:
             str(self.amount).encode() +
             str(self.timestamp).encode()
         )
-        return key.hexdigest()
+        return key.digest()
     
     def sign(self, private_key):
         """
@@ -42,7 +42,7 @@ class Transaction:
         Args:
             private_key (str)
         """
-        self.signature = rsa.sign(self.hash.encode(), private_key, 'SHA-256')
+        self.signature = private_key.sign_deterministic(self.hash)
 
     def verify(self, public_key):
         """
@@ -51,13 +51,17 @@ class Transaction:
         Args:
             public_key (str)
         """
-        return rsa.verify(self.hash.encode(), self.signature, public_key)
 
-    def __repr__(self):
-        return "Transaction<From: {}, To: {}, Amount: {}, Time: {}, Hash: {}>".format(
-            self.sender,
-            self.receiver,
-            self.amount,
-            self.timestamp,
-            self.hash
-        )
+        return public_key.verify(self.signature, self.hash)
+    
+    def __str__(self):
+        return f"""
+        (Sender: {self.sender}
+        Receiver: {self.receiver}
+        Amount: {self.amount}
+        Timestamp: {self.timestamp}
+        Hash: {self.hash}
+        Signature: {self.signature})
+        """
+
+
