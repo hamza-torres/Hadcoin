@@ -3,6 +3,7 @@ sys.path.append("..")
 from Blockchain import Blockchain
 from Block import Block 
 from Transaction import Transaction
+from Wallet import Wallet
 import datetime
 from ecdsa import SigningKey, NIST384p
 
@@ -155,13 +156,23 @@ def test_mine_block():
     transaction2.signature = sk1.sign(transaction2.hash)
     blockchain.add_transaction(transaction2)
 
-    blockchain.mine()
-    blockchain.mine()
-    blockchain.mine()
-
+    blockchain.mine(vk)
+    blockchain.mine(vk)
+    blockchain.mine(vk1)
     assert len(blockchain.chain) == 4, 'Wrong number of blocks'
+
+    for i in range(1, 210):
+        blockchain.mine(vk)
+
+    for block in blockchain.chain:
+        if block.index == 1:
+            continue
+        assert block.reward != None, f'Wrong reward amount {block.index}'
+        # assert block.reward.amount == 50 / (2 ** (block.index // 200)), f'Wrong reward amount {block.index}'
+        # print(f'Block {block.index}, reward: {block.reward.get_amount()}')
+
     # for block in blockchain.chain:
-    #     print(block.__str__())
+    #     print(block)
     #     # print(block.transaction.__str__())
     #     print('\n')
 
@@ -169,9 +180,11 @@ def test_mine_block():
 
 def test_set_difficulty():
     blockchain = Blockchain()
+    sk = SigningKey.generate() # uses NIST192p
+    vk = sk.verifying_key
     assert blockchain.difficulty == 1, 'Wrong difficulty of genesis block'
     for i in range(1, 5000):
-        blockchain.mine()
+        blockchain.mine(vk)
     assert blockchain.difficulty == 3, 'Wrong difficulty'
     for block in blockchain.chain:
         print(f'Block {block.index}, difficulty: {block.difficulty}')
@@ -183,9 +196,11 @@ def test_get_tail():
     assert blockchain.get_tail() == blockchain.chain[-1]
 
 def test_get_block():
+    sk = SigningKey.generate() # uses NIST192p
+    vk = sk.verifying_key
     blockchain = Blockchain()
     for i in range(1, 5):
-        blockchain.mine()
+        blockchain.mine(vk)
 
     assert blockchain.get_block(1) == blockchain.chain[0], 'Wrong block'
     assert blockchain.get_block(3) == blockchain.chain[2], 'Wrong block'
@@ -193,9 +208,11 @@ def test_get_block():
 
 
 def test_get_chain():
+    sk = SigningKey.generate() # uses NIST192p
+    vk = sk.verifying_key
     blockchain = Blockchain()
     for i in range(1, 5):
-        blockchain.mine()
+        blockchain.mine(vk)
     assert blockchain.get_chain() == blockchain.chain
 
 def test_get_pending_transactions():
@@ -214,17 +231,21 @@ def test_get_pending_transactions():
     assert blockchain.get_pending_transactions() == [transaction]
 
 def test_proof_of_work():
+    sk = SigningKey.generate() # uses NIST192p
+    vk = sk.verifying_key
     blockchain = Blockchain()
     for i in range(1, 5000):
-        blockchain.mine()
+        blockchain.mine(vk)
     assert blockchain.get_block(5).hash.startswith('0' * 1), 'Wrong difficulty'
     assert blockchain.get_block(2020).hash.startswith('0' * 2), 'Wrong difficulty'
     assert blockchain.get_block(4500).hash.startswith('0' * 3), 'Wrong difficulty'
 
 def test_validate():
+    sk = SigningKey.generate() # uses NIST192p
+    vk = sk.verifying_key
     blockchain = Blockchain()
     for i in range(1, 100):
-        blockchain.mine()
+        blockchain.mine(vk)
 
     sk = SigningKey.generate() # uses NIST192p
     vk = sk.verifying_key
@@ -237,95 +258,41 @@ def test_validate():
     )
     transaction.signature = sk.sign(transaction.hash)
     blockchain.add_transaction(transaction)
-    blockchain.mine()
+    blockchain.mine(vk)
 
     assert blockchain.validate() == True, 'Blockchain should be valid'
     
 
-# def test_is_valid():
-#     blockchain = Blockchain()
-#     assert blockchain.is_valid() == True
-#     blockchain.chain.append(Block(
-#         index=2,
-#         timestamp=0,
-#         previous_hash=blockchain.chain[-1].hash,
-#         transaction={"Genesis Block": 0},
-#         difficulty=1,
-#         nonce=0
-#     ))
-#     assert blockchain.is_valid() == False
-#     blockchain.chain.append(Block(
-#         index=3,
-#         timestamp=0,
-#         previous_hash=blockchain.chain[-1].hash,
-#         transaction={"Genesis Block": 0},
-#         difficulty=1,
-#         nonce=0
-#     ))
-#     assert blockchain.is_valid() == False
-#     blockchain.chain.append(Block(
-#         index=4,
-#         timestamp=0,
-#         previous_hash=blockchain.chain[-1].hash,
-#         transaction={"Genesis Block": 0},
-#         difficulty=2,
-#         nonce=0
-#     ))
-#     assert blockchain.is_valid() == False
-#     blockchain.chain.append(Block(
-#         index=5,
-#         timestamp=0,
-#         previous_hash=blockchain.chain[-1].hash,
-#         transaction={"Genesis Block": 0},
-#         difficulty=2,
-#         nonce=0
-#     ))
-#     assert blockchain.is_valid() == False
-#     blockchain.chain.append(Block(
-#         index=6,
-#         timestamp=0,
-#         previous_hash=blockchain.chain[-1].hash,
-#         transaction={"Genesis Block": 0},
-#         difficulty=2,
-#         nonce=0
-#     ))
-#     assert blockchain.is_valid() == False
-#     blockchain.chain.append(Block(
-#         index=7,
-#         timestamp=0,
-#         previous_hash=blockchain.chain[-1].hash,
-#         transaction={"Genesis Block": 0},
-#         difficulty=2,
-#         nonce=0
-#     ))
-#     assert blockchain.is_valid() == False
-#     blockchain.chain.append(Block(
-#         index=8,
-#         timestamp=0,
-#         previous_hash=blockchain.chain[-1].hash,
-#         transaction={"Genesis Block": 0},
-#         difficulty=2,
-#         nonce=0
-#     ))
-#     assert blockchain.is_valid() == False
-#     blockchain.chain.append(Block(
-#         index=9,
-#         timestamp=0,
-#         previous_hash=blockchain.chain[-1].hash,
-#         transaction={"Genesis Block": 0},
-#         difficulty=2,
-#         nonce=0
-#     ))
-#     assert blockchain.is_valid() == False
-#     blockchain.chain.append(Block(
-#         index=10,
-#         timestamp=0,
-#         previous_hash=blockchain.chain[-1].hash,
-#         transaction={"Genesis Block": 0},
-#         difficulty=2,
-#         nonce=0
-#     ))
-#     assert blockchain.is_valid() == False
+def test_wallet_creation():
+    wallet = Wallet()
+    assert wallet.private_key == None, 'Private key should be None'
+    assert wallet.public_key == None, 'Public key should be None'
+
+def test_wallet_new_keys():
+    wallet = Wallet()
+    wallet.generate_keys()
+    assert wallet.private_key != None, 'Private key should not be None'
+    assert wallet.public_key != None, 'Public key should not be None'
+
+    sk = SigningKey.generate() # uses NIST192p
+    vk = sk.verifying_key
+    wallet.set_keys(sk, vk)
+
+    assert wallet.private_key == sk, 'Private key should be equal'
+    assert wallet.public_key == vk, 'Public key should be equal'
+
+def test_wallet_transaction():
+    wallet = Wallet()
+    wallet.generate_keys()
+
+    transaction = wallet.create_transaction('John', 10)
+    assert transaction.sender == wallet.public_key, 'Sender should be equal'
+    assert transaction.receiver == 'John', 'Receiver should be equal'
+    assert transaction.amount == 10, 'Amount should be equal'
+    assert transaction.signature != None, 'Signature should not be None'
+    assert transaction.verify(wallet.public_key) == True, 'Signature should be valid'
+
+
 
 
 
@@ -340,4 +307,8 @@ test_get_chain()
 test_get_pending_transactions()
 # test_proof_of_work()
 test_validate()
-# test_is_valid()
+
+test_wallet_creation()
+test_wallet_new_keys()
+test_wallet_transaction()
+

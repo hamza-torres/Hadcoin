@@ -1,9 +1,9 @@
 from Transaction import Transaction
 import datetime
-import rsa
+import ecdsa
 
 class Wallet:
-    def __init__(self, private_key, public_key):
+    def __init__(self, private_key=None, public_key=None):
         """
         Returns a new Wallet object.
 
@@ -11,12 +11,12 @@ class Wallet:
             private_key (str)
             public_key (str)
         """
-        self.private_key = private_key or None
-        self.public_key = public_key or None
+        self.private_key = private_key
+        self.public_key = public_key
         self.balance = 0.00
         self.transactions = []
 
-    def create_transaction(self, receiver, amount, timestamp):
+    def create_transaction(self, receiver, amount):
         """
         Creates a transaction dictionary.
 
@@ -29,16 +29,17 @@ class Wallet:
             self.public_key, 
             receiver, 
             amount, 
-            timestamp= str(datetime.datetime.now()),
-            hash= self.hash(),
-            signature= transaction.sign(self.private_key))
+            timestamp= str(datetime.datetime.now()))
+        signature= transaction.sign(self.private_key)
         return transaction
+    
+    def generate_keys(self):
+        """
+        Generates a private key and a public key.
+        """
+        self.private_key = ecdsa.SigningKey.generate(curve=ecdsa.SECP256k1)
+        self.public_key = self.private_key.get_verifying_key()
 
-    def __repr__(self):
-        return "Wallet<Public Key: {}, Balance: {}>".format(
-            self.private_key,
-            self.balance
-        )
 
     # ACCESSORS ----------------------------------------------------------------
     def get_private_key(self):
@@ -76,14 +77,14 @@ class Wallet:
         self.private_key = private_key
         self.public_key = public_key
 
-    def set_balance(self, balance):
+    def calculate_balance(self, balance):
         """
         Sets the balance.
 
         Args:
             balance (float)
         """
-        self.balance = balance
+        # self.balance = balance
 
     def set_transactions(self, transactions):
         """
@@ -92,7 +93,7 @@ class Wallet:
         Args:
             transactions (list)
         """
-        self.transactions = transactions
+        # self.transactions = transactions
 
     # METHODS ------------------------------------------------------------------
     # def send()

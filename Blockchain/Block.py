@@ -34,6 +34,7 @@ class Block:
         self.transaction = transaction
         self.difficulty = difficulty
         self.nonce = nonce
+        self.reward = None
         self.hash = self.hash_block()
 
     def hash_block(self):
@@ -46,7 +47,8 @@ class Block:
                 str(self.transaction) + 
                 str(self.previous_hash) + 
                 str(self.nonce) + 
-                str(self.difficulty))  
+                str(self.difficulty)+
+                str(self.reward))  
         return hashlib.sha256(hash_str.encode()).hexdigest()
 
 
@@ -58,5 +60,6 @@ class Block:
         Previous Hash: {self.previous_hash}
         Difficulty: {self.difficulty}
         Nonce: {self.nonce}
+        Reward: {self.reward}
         Hash: {self.hash}
         """

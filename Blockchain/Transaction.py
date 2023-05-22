@@ -19,10 +19,10 @@ class Transaction:
         self.receiver = receiver
         self.amount = amount
         self.timestamp = timestamp
-        self.hash = self.hash()
+        self.hash = self.hash_transaction()
         self.signature = None
 
-    def hash(self):
+    def hash_transaction(self):
         """
         Returns a hash of the transaction taking into account its attributes
         """
@@ -56,12 +56,12 @@ class Transaction:
     
     def __str__(self):
         return f"""
-        (Sender: {self.sender}
-        Receiver: {self.receiver}
-        Amount: {self.amount}
-        Timestamp: {self.timestamp}
-        Hash: {self.hash}
-        Signature: {self.signature})
+        >   Sender: {self.sender}
+        >   Receiver: {self.receiver}
+        >   Amount: {self.amount}
+        >   Timestamp: {self.timestamp}
+        >   Hash: {self.hash}
+        >   Signature: {self.signature}
         """
 
 

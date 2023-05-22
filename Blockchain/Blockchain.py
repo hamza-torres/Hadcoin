@@ -1,5 +1,6 @@
 from Block import Block
 from Transaction import Transaction
+from Reward import CoinbaseTransaction 
 import random
 import datetime
 import math
@@ -19,6 +20,7 @@ class Blockchain:
             nonce=0
         )]
         self.difficulty = 1
+        self.reward = 50
         self.pending_transactions = []
 
     def add_block(self, block):
@@ -61,6 +63,18 @@ class Blockchain:
         if self.difficulty < 1:
             self.difficulty = 1
         # return 'Difficulty Successfully Set', self.difficulty
+
+    def set_reward(self):
+        """
+        Sets the reward for mining a new block.
+
+        Args:
+            reward (int)
+        """
+        initial_reward = 50  # Initial reward amount
+        halving_interval = 200  # Number of blocks after which reward halves
+        self.reward = initial_reward / (2 ** (self.chain[-1].index // halving_interval))
+        return self.reward
 
 
     def replace_chain(self, new_chain):
@@ -131,7 +145,7 @@ class Blockchain:
         return nonce
 
 
-    def mine(self):
+    def mine(self, public_key):
         """
         Mines a new block with the pending transactions and adds it to the chain.
         """
@@ -143,6 +157,7 @@ class Blockchain:
             difficulty=self.difficulty,
             nonce=0
         )
+        block.reward = CoinbaseTransaction(public_key, self.set_reward())
         if self.pending_transactions:
             block.transaction = self.pending_transactions[0]
             block.nonce = self.proof_of_work(block)
@@ -193,6 +208,21 @@ class Blockchain:
             return True
         return False
     
+    def validate_reward(self, transaction):
+        """
+        Returns True if the reward transaction is valid, False otherwise.
+        """
+        if transaction.verify(transaction.sender):
+            return True
+        return False
+    
+    def verify_key(self, public_key):
+        """
+        Returns True if the public key is valid, False otherwise.
+        """
+        # if public_key in self.wallets:
+        #     return True
+        # return False
 
     def __repr__(self):
         return "Blockchain<difficulty: {}, chain: {}>".format(
