@@ -63,5 +63,15 @@ class Transaction:
         >   Hash: {self.hash}
         >   Signature: {self.signature}
         """
+    
+    def __repr__(self):
+        return {
+            "sender": self.sender.to_string().hex(),
+            "receiver": self.receiver,
+            "amount": self.amount,
+            "timestamp": self.timestamp,
+            "hash": self.hash.hex(),
+            "signature": self.signature.hex()
+        }
 
 

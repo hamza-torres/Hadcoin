@@ -1,4 +1,5 @@
 import hashlib
+import json
 
 class CoinbaseTransaction:
     def __init__(self, recipient_address, amount):
@@ -26,14 +27,29 @@ class CoinbaseTransaction:
             return False
         return True
     
-    def __str__(self):
-        return f"""
-        >    Receiver: {self.receiver}
-        >    Amount: {self.amount}
-        >    Hash: {self.hash}
-        """
-    
     def get_amount(self):
         return self.amount
     
+    def __str__(self):
+        return f"""
+        >    Receiver: {self.receiver.to_string().hex()}
+        >    Amount: {self.amount}
+        >    Hash: {self.hash.hex()}
+        """
     
+    # def __repr__(self):
+    #     rec = self.receiver.to_string().hex()
+    #     rec = {'miner': rec}
+    #     json_data = json.dumps(rec, default=lambda x: x.decode() if isinstance(x, bytes) else str(x))
+    #     return {
+    #         "receiver": str(self.receiver.to_string().hex()),
+    #         "amount": self.amount,
+    #         "hash": self.hash
+    #     }
+    
+    def __repr__(self):
+        return {
+            "receiver": self.receiver.to_string().hex(),
+            "amount": self.amount,
+            "hash": self.hash.hex()
+        }

@@ -6,6 +6,7 @@ from Transaction import Transaction
 from Wallet import Wallet
 import datetime
 from ecdsa import SigningKey, NIST384p
+import ecdsa
 
 
 
@@ -88,6 +89,8 @@ def test_add_block():
 
 
 def test_add_transaction():
+    # private_key = ecdsa.SigningKey.generate(curve=ecdsa.SECP256k1)
+    # public_key = private_key.get_verifying_key()
     blockchain = Blockchain()
     sk = SigningKey.generate() # uses NIST192p
     vk = sk.verifying_key
@@ -129,7 +132,7 @@ def test_add_transaction():
     transaction2.signature = sk1.sign(transaction2.hash)
     assert blockchain.add_transaction(transaction2) == ('Transaction Successfully Added', transaction2)
     assert len(blockchain.pending_transactions) == 2, 'Wrong number of pending transactions'
-
+    print(blockchain.get_pending_transactions())
 
 def test_mine_block():
     blockchain = Blockchain()
@@ -293,22 +296,64 @@ def test_wallet_transaction():
     assert transaction.verify(wallet.public_key) == True, 'Signature should be valid'
 
 
+def test_keys():
+    private_key = ecdsa.SigningKey.generate()
+    public_key = private_key.get_verifying_key()
 
 
 
-test_blockchain()
-test_add_block()
-test_add_transaction()
-test_mine_block()
-# test_set_difficulty()
-test_get_tail()
-test_get_block()
-test_get_chain()
-test_get_pending_transactions()
-# test_proof_of_work()
-test_validate()
+    st_key = public_key.to_string().hex()
+    print(st_key)
+    
 
-test_wallet_creation()
-test_wallet_new_keys()
-test_wallet_transaction()
+
+    new_public_key = ecdsa.VerifyingKey.from_string(bytes.fromhex(st_key))
+    print(new_public_key.to_string().hex())
+    print(new_public_key)
+
+
+
+    # new = ecdsa.SigningKey.from_string(bytes.fromhex(st_key), curve=ecdsa.SECP256k1)
+    # newvk = ecdsa.verifying_key.from_string(bytes.fromhex(st_key), curve=ecdsa.SECP256k1)
+    
+def test_recover_key():
+    key = "a9d42ed5770ce92f28ebad41955a0f6f67825fb784aa1aee968c590ca9a427d2fbce4e2dd03abd9d94d83a4ecac6a727"
+    vk = ecdsa.VerifyingKey.from_string(bytes.fromhex(key))
+
+    hash = "2b2ba055d61da14b9e601ed49389c5a5c7652c9fe1acf365780a88e30bb16ef0"
+    hash = bytes.fromhex(hash)
+
+    sig = "d6c811cf2c29cc67575a9f847f2575eb7fa935c358a23cd06922f83068b98b1caa24cccc0741dd2ed291fc5e237ea8dc"
+    sig = bytes.fromhex(sig)
+
+    t = Transaction(
+        vk,
+        "John",
+        10,
+        "2023-05-26 22:44:37.651999",
+        hash,
+        sig
+    )
+    
+    print(vk.verify(sig, hash))
+    print(t.verify())
+
+
+test_recover_key()
+# test_keys()
+# test_blockchain()
+# test_add_block()
+# test_add_transaction()
+# test_mine_block()
+# # test_set_difficulty()
+# test_get_tail()
+# test_get_block()
+# test_get_chain()
+# test_get_pending_transactions()
+# # test_proof_of_work()
+# test_validate()
+
+# test_wallet_creation()
+# test_wallet_new_keys()
+# test_wallet_transaction()
 

@@ -63,3 +63,38 @@ class Block:
         Reward: {self.reward}
         Hash: {self.hash}
         """
+    
+    def __repr__(self):
+        # if self.reward == None:
+        #     return {
+        #         "index": self.index,
+        #         "timestamp": self.timestamp,
+        #         "transaction": self.transaction,
+        #         "previous_hash": self.previous_hash,
+        #         "difficulty": self.difficulty,
+        #         "nonce": self.nonce,
+        #         "hash": self.hash
+        #     }
+        return {
+            "index": self.index,
+            "timestamp": self.timestamp,
+            "transaction": self.transaction.__repr__(),
+            "previous_hash": self.previous_hash,
+            "difficulty": self.difficulty,
+            "reward": self.reward.__repr__(),
+            "nonce": self.nonce,
+            "hash": self.hash
+        }
+    
+
+    # def __repr__(self):
+    #     return {
+    #         "index": self.index,
+    #         "timestamp": self.timestamp,
+    #         "transaction": self.transaction,
+    #         "previous_hash": self.previous_hash,
+    #         "difficulty": self.difficulty,
+    #         "nonce": self.nonce,
+    #         "reward": self.reward.__repr__(),
+    #         "hash": self.hash
+    #     }

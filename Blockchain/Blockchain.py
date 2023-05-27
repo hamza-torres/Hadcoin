@@ -1,9 +1,12 @@
 from Block import Block
 from Transaction import Transaction
 from Reward import CoinbaseTransaction 
+from urllib.parse import urlparse
 import random
 import datetime
 import math
+import requests
+
 
 class Blockchain:
     def __init__(self):
@@ -18,10 +21,11 @@ class Blockchain:
             transaction={"Genesis Block": 0},
             difficulty=1,
             nonce=0
-        )]
+        )]   
         self.difficulty = 1
         self.reward = 50
         self.pending_transactions = []
+        self.nodes = set()
 
     def add_block(self, block):
         """
@@ -77,17 +81,48 @@ class Blockchain:
         return self.reward
 
 
-    def replace_chain(self, new_chain):
+    def replace_chain(self, network):
         """
-        Replaces the current chain with a new chain.
+        Replaces the chain with the longest chain in the network.
 
         Args:
-            new_chain (list)
+            network (list)
         """
-        if len(new_chain) > len(self.chain):
-            self.chain = new_chain
-            return 'Chain Successfully Replaced', self.chain
+        longest_chain = None
+        max_length = len(self.chain)
+        for node in network:
+            response = requests.get(f'http://{node}/get_chain')
+            if response.status_code == 200:
+                length = response.json()['length']
+                chain = response.json()['chain']
+                if length > max_length and self.is_valid_chain(chain):
+                    max_length = length
+                    longest_chain = chain
+        if longest_chain:
+            self.chain = longest_chain
+            return True
         return False
+    
+    def add_node(self, address):
+        """
+        Adds a new node to the network.
+
+        Args:
+            address (str)
+        """
+        url = urlparse(address)
+        self.nodes.add(url.netloc)
+
+    def remove_node(self, address):
+        """
+        Removes a node from the network.
+
+        Args:
+            address (str)
+        """
+        url = urlparse(address)
+        self.nodes.remove(url.netloc)
+        
     
     # ACCESSORS ----------------------------------------------------------------
     def get_tail(self):
@@ -117,14 +152,20 @@ class Blockchain:
         """
         Returns the chain.
         """
-        return self.chain
+        chain = []
+        for block in self.chain:
+            chain.append(block.__repr__())
+        return chain
     
     def get_pending_transactions(self):
         """
         Returns the list of pending transactions.
         """
         if self.pending_transactions:
-            return self.pending_transactions
+            transactions = []
+            for transaction in self.pending_transactions:
+                transactions.append(transaction.__repr__())
+            return transactions
         return None
 
 # OPERATIONS ----------------------------------------------------------------
@@ -223,6 +264,8 @@ class Blockchain:
         # if public_key in self.wallets:
         #     return True
         # return False
+
+
 
     def __repr__(self):
         return "Blockchain<difficulty: {}, chain: {}>".format(
