@@ -1,11 +1,4 @@
 # Project-720
-
-## Plan of Action
-- first
-- second
-- third
-
-
 ## Architecture
 Software architecture of the cryptocurrency and the interactions between its components. Below is a breakdown of classes and their properties.
 
