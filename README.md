@@ -360,7 +360,6 @@ def send(self, transaction):
 
 
 ### **API** - An API object facilitating interaction with the Blockchain.
-#### Consider
 - [ ] Get the Blockchain.
 - [ ] Mine a block.
 - [ ] Add a transaction.
