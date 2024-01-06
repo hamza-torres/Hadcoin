@@ -1,0 +1,64 @@
+{
+    "chain": [
+        {
+            "difficulty": 1,
+            "hash": "5532aac0db98ce17baebe612a0981ddd4a1149b56a87298e5ff459b80a50ec64",
+            "index": 1,
+            "nonce": 0,
+            "previous_hash": null,
+            "reward": "None",
+            "timestamp": "2023-05-26 22:08:43.120806",
+            "transaction": "{'Genesis Block': 0}"
+        },
+        {
+            "difficulty": 1,
+            "hash": "048d340c2ee930052691c4bb8f56f0f7c09ce2c91a0025a41f5f510f33e84a25",
+            "index": 2,
+            "nonce": 2170829563,
+            "previous_hash": "5532aac0db98ce17baebe612a0981ddd4a1149b56a87298e5ff459b80a50ec64",
+            "reward": {
+                "amount": 50.0,
+                "hash": "6c7f68122bb0558b6c7732b5d458b52d57641b73f30c55c0807c9a98b4191b5b",
+                "receiver": "41e91fbba30c93396d46ad9bb550085bab66e4820041f70d0f4c8f605da2cfd4fec6ae8892de7edfebdb9d7acc0707fb4e16105335e56eaaebbf5f966a589e2d"
+            },
+            "timestamp": "2023-05-26 22:09:02.950158",
+            "transaction": "None"
+        },
+        {
+            "difficulty": 1,
+            "hash": "0d62c886af96db42f842bd10a9bd456d7e1467ca1db403374033efa3cc66305d",
+            "index": 3,
+            "nonce": 4102866202,
+            "previous_hash": "048d340c2ee930052691c4bb8f56f0f7c09ce2c91a0025a41f5f510f33e84a25",
+            "reward": {
+                "amount": 50.0,
+                "hash": "6c7f68122bb0558b6c7732b5d458b52d57641b73f30c55c0807c9a98b4191b5b",
+                "receiver": "41e91fbba30c93396d46ad9bb550085bab66e4820041f70d0f4c8f605da2cfd4fec6ae8892de7edfebdb9d7acc0707fb4e16105335e56eaaebbf5f966a589e2d"
+            },
+            "timestamp": "2023-05-26 22:09:04.297623",
+            "transaction": "None"
+        }
+    ],
+    "length": 3
+}
+
+[
+    {
+      "sender": "a9d42ed5770ce92f28ebad41955a0f6f67825fb784aa1aee968c590ca9a427d2fbce4e2dd03abd9d94d83a4ecac6a727",
+      "receiver": "John",
+      "amount": 10,
+      "timestamp": "2023-05-26 22:44:37.651999",
+      "hash": "2b2ba055d61da14b9e601ed49389c5a5c7652c9fe1acf365780a88e30bb16ef0",
+      "signature": "d6c811cf2c29cc67575a9f847f2575eb7fa935c358a23cd06922f83068b98b1caa24cccc0741dd2ed291fc5e237ea8dc"
+    },
+    {
+      "sender": "b0cb943c3110afc5e43367ccd3c89a9bfc38842aaf7c80288a9ac90e7d0c4df3cf6e66e3e931f6afd1be224af776c6a7",
+      "receiver": "John",
+      "amount": 10,
+      "timestamp": "2023-05-26 22:44:37.657006",
+      "hash": "78e2ca350aa87b6df5c8b7c990e4aa2b16aeccecad19a01e5d291106aedbb22a",
+      "signature": "bc22895958ebe8453cbd07eb8e780c7da215b5753475a7488534145e12f2c1cc346128cf863fd4c22c5d635838986cfa"
+    }
+  ]
+  
+  
