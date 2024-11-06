@@ -146,14 +146,6 @@ Run the test suite using:
 python -m unittest discover -s Blockchain/tests
 ```
 
-## 📚 Documentation
-
-Comprehensive documentation is available in the `Documentation` folder:
-
-- **Research Overview**: Background and theoretical foundations
-- **Specification**: Technical requirements and system architecture
-- **Bibliography**: Reference materials and citations
-
 ## 🛠️ Implementation Details
 
 ### Block Structure
